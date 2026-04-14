@@ -13,7 +13,7 @@ data = load_breast_cancer()
 X = data.data
 y = data.target
 
-X = pd.DataFrame(x, columns=data.feature_names)
+X = pd.DataFrame(X, columns=data.feature_names)
 y = pd.DataFrame(y, columns=['target'])
 
 data = pd.concat([X, y], axis = 1)
@@ -45,6 +45,13 @@ param_grid = [
         'model__C': [0.01, 0.1, 1., 10.],
         'model__solver': ['lbfgs'],
         'model__class_weight': ['balanced']
+    },
+    {
+        'model__penalty': ['elasticnet'],
+        'model__C': [0.01, 0.1, 1., 10.],
+        'model__l1_ratio': np.linspace(0.1,0.9,10),
+        'model__solver': ['saga'],
+        'model__class_weight': ['balanced']
     }
 ]
 
@@ -56,3 +63,6 @@ coef = model.named_steps['model'].coef_
 coef = pd.Series(coef.ravel(), index= X.columns)
 coef = coef.sort_values(ascending = False)
 print(coef)
+
+y_preds = model.predict(X_test)
+print(accuracy_score(y_preds, y_test))
